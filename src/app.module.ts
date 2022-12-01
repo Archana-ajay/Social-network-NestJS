@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from './user/user.module';
+import { PostModule } from './post/post.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -14,7 +16,23 @@ import { UserModule } from './user/user.module';
         useUnifiedTopology: true,
       }),
     }),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule.forRoot({ isGlobal: true })],
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => ({
+        transport: {
+          host: config.get<string>('MAIL_HOST'),
+          port: 25,
+          auth: {
+            user: config.get('MAIL_USER'),
+            pass: config.get('MAIL_PASSWORD'),
+          },
+        },
+      }),
+    }),
+    ConfigModule.forRoot({ isGlobal: true }),
     UserModule,
+    PostModule,
   ],
 })
 export class AppModule {}
