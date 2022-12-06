@@ -23,7 +23,7 @@ import { ProfileModule } from './profile/profile.module';
       useFactory: async (config: ConfigService) => ({
         transport: {
           host: config.get<string>('MAIL_HOST'),
-          port: 25,
+          port: 587,
           auth: {
             user: config.get('MAIL_USER'),
             pass: config.get('MAIL_PASSWORD'),

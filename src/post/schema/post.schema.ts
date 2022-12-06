@@ -7,7 +7,7 @@ export type PostDocument = mongoose.HydratedDocument<Post>;
 @Schema()
 export class Post {
   @Prop()
-  desciption: string;
+  description: string;
 
   @Prop()
   image: string;

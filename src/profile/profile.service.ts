@@ -7,13 +7,17 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from '../user/schema/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { profileDto } from './dto';
+import { Post, PostDocument } from 'src/post/schema/post.schema';
 
 @Injectable()
 export class ProfileService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(Post.name) private postModel: Model<PostDocument>,
+  ) {}
 
   async editProfile(
-    image: string,
+    image: Express.Multer.File,
     dto: profileDto,
     userId: number,
     user: string,
@@ -22,9 +26,9 @@ export class ProfileService {
       const updateUser = await this.userModel.findOneAndUpdate(
         { username: user, _id: userId },
         {
-          image: image,
+          image: image.filename,
           desciption: dto.description,
-          url: `/uploads/profileimages/${image}`,
+          url: `/uploads/profileimages/${image.filename}`,
         },
         { new: true, runValidators: true },
       );
@@ -50,7 +54,10 @@ export class ProfileService {
       { password: 0, __v: 0 },
     );
     if (!findUser) throw new NotFoundException('user not found');
-    return findUser;
+    const userPosts = await this.postModel
+      .find({ _id: { $in: findUser.posts } })
+      .sort({ date: -1 });
+    return { user: findUser, posts: userPosts };
   }
 
   async followProfile(userId: number, id: number) {

@@ -1,11 +1,10 @@
 import {
+  BadRequestException,
   Body,
   Controller,
-  FileTypeValidator,
   Get,
-  MaxFileSizeValidator,
   Param,
-  ParseFilePipe,
+  ParseFilePipeBuilder,
   Patch,
   Res,
   UploadedFile,
@@ -33,6 +32,12 @@ export const storage = {
       cb(null, `${randomName}_${file.originalname}`);
     },
   }),
+  fileFilter: (req: Request, file, cb) => {
+    if (!file.mimetype.startsWith('image')) {
+      return cb(new BadRequestException('please upload an image'), false);
+    }
+    return cb(null, true);
+  },
 };
 
 //conrollers
@@ -40,33 +45,33 @@ export const storage = {
 @Controller('profile')
 export class ProfileController {
   constructor(private profileService: ProfileService) {}
-  //get profile
+  //get all profile
   @Get(':username')
   getProfile(@GetUser('_id') userId: number, @Param('username') user: string) {
     return this.profileService.getProfile(userId, user);
   }
   //edit profile
-  @Patch(':username/edit')
   @UseInterceptors(FileInterceptor('image', storage))
-  //image uploading
-  uploadFile(
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 1000000 }),
-          new FileTypeValidator({ fileType: 'jpeg' || 'png' }),
-        ],
-      }),
-    )
-    image: Express.Multer.File,
+  @Patch(':username/edit')
+  uploadFileAndPassValidation(
     @Body() dto: profileDto,
     @GetUser('_id') userId: number,
     @Param('username') user: string,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: 'jpeg',
+        })
+        .build({
+          fileIsRequired: true,
+        }),
+    )
+    image: Express.Multer.File,
   ) {
-    return this.profileService.editProfile(image.filename, dto, userId, user);
+    return this.profileService.editProfile(image, dto, userId, user);
   }
   //view image
-  @Get('/profileimages/:imagename')
+  @Get('/image/:imagename')
   async findProfileImage(
     @Param('imagename') imagename,
     @Res() res,
