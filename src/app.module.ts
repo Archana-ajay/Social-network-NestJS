@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { PostModule } from './post/post.module';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
     ConfigModule.forRoot({ isGlobal: true }),
     UserModule,
     PostModule,
+    ProfileModule,
   ],
 })
 export class AppModule {}

@@ -4,14 +4,14 @@ import { LoginDto, RegisterDto } from './dto';
 
 @Controller('user')
 export class UserController {
-  constructor(private authService: UserService) {}
+  constructor(private userService: UserService) {}
   @Post('register')
   register(@Body() dto: RegisterDto) {
-    return this.authService.register(dto);
+    return this.userService.register(dto);
   }
   @HttpCode(HttpStatus.OK)
   @Post('login')
   login(@Body() dto: LoginDto) {
-    return this.authService.login(dto);
+    return this.userService.login(dto);
   }
 }
