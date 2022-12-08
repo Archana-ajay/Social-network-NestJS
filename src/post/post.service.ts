@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserDocument } from 'src/user/schema/user.schema';
+import { User, UserDocument } from '../user/schema/user.schema';
 import { postDto, updateDto } from './dto';
 import { Post, PostDocument } from './schema/post.schema';
 
@@ -20,12 +20,15 @@ export class PostService {
   ) {
     try {
       const post = new this.postModel({
-        image: image?.filename,
+        image: image?.buffer,
         description: dto.description,
         date: new Date(),
         postedBy: userId,
         user: user,
       });
+      console.log(image);
+      
+      
       await post.save();
       await this.userModel.findOneAndUpdate(
         { _id: userId },

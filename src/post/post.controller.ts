@@ -17,8 +17,8 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { PaginationParams, updateDto } from './dto';
-import { GetUser } from 'src/user/decorator';
-import { JwtGuard } from 'src/user/guard';
+import { GetUser } from '../user/decorator';
+import { JwtGuard } from '../user/guard';
 import { postDto } from './dto';
 import { PostService } from './post.service';
 import { of } from 'rxjs';

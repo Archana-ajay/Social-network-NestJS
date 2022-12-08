@@ -6,6 +6,7 @@ import {
   Param,
   ParseFilePipeBuilder,
   Patch,
+  Req,
   Res,
   UploadedFile,
   UseGuards,
@@ -14,9 +15,9 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { profileDto } from './dto';
-import { GetUser } from 'src/user/decorator';
+import { GetUser } from '../user/decorator';
 import { ProfileService } from './profile.service';
-import { JwtGuard } from 'src/user/guard';
+import { JwtGuard } from '../user/guard';
 import { of } from 'rxjs';
 import { join } from 'path';
 
@@ -57,17 +58,19 @@ export class ProfileController {
     @Body() dto: profileDto,
     @GetUser('_id') userId: number,
     @Param('username') user: string,
+    @Req() req,
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addFileTypeValidator({
           fileType: 'jpeg',
         })
         .build({
-          fileIsRequired: true,
+          fileIsRequired: false,
         }),
     )
-    image: Express.Multer.File,
+    image?: Express.Multer.File,
   ) {
+    console.log(image);
     return this.profileService.editProfile(image, dto, userId, user);
   }
   //view image
@@ -76,8 +79,8 @@ export class ProfileController {
     @Param('imagename') imagename,
     @Res() res,
   ): Promise<any> {
-    return of(
-      res.sendFile(join(process.cwd(), 'uploads/profileimages/' + imagename)),
+    return res.sendFile(
+      join(process.cwd(), 'uploads/profileimages/' + imagename),
     );
   }
   //follow the user

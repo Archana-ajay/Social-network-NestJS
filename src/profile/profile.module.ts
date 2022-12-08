@@ -3,7 +3,7 @@ import { ProfileService } from './profile.service';
 import { ProfileController } from './profile.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from '../user/schema/user.schema';
-import { Post, PostSchema } from 'src/post/schema/post.schema';
+import { Post, PostSchema } from '../post/schema/post.schema';
 
 @Module({
   imports: [

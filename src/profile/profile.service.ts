@@ -7,7 +7,7 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from '../user/schema/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { profileDto } from './dto';
-import { Post, PostDocument } from 'src/post/schema/post.schema';
+import { Post, PostDocument } from '../post/schema/post.schema';
 
 @Injectable()
 export class ProfileService {
@@ -26,9 +26,11 @@ export class ProfileService {
       const updateUser = await this.userModel.findOneAndUpdate(
         { username: user, _id: userId },
         {
-          image: image.filename,
+          image: image?.filename,
           desciption: dto.description,
-          url: `/uploads/profileimages/${image.filename}`,
+          url: image
+            ? `/uploads/profileimages/${image?.filename}`
+            : 'default.png',
         },
         { new: true, runValidators: true },
       );
