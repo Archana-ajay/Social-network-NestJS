@@ -70,7 +70,6 @@ export class ProfileController {
     )
     image?: Express.Multer.File,
   ) {
-    console.log(image);
     return this.profileService.editProfile(image, dto, userId, user);
   }
   //view image

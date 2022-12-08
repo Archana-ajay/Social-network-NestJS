@@ -10,7 +10,6 @@ import * as pactum from 'pactum';
 import { LoginDto, RegisterDto } from 'src/user/dto';
 import { postDto, updateDto } from 'src/post/dto';
 import { profileDto } from 'src/profile/dto';
-import { readFileSync } from 'fs';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -241,8 +240,12 @@ describe('App e2e', () => {
           .withHeaders({
             Authorization: 'Bearer $S{userAt}',
           })
-          .withBody(dto)
+          .withFile('image', 'C:/Users/Lenovo/Downloads/computer-1.jpeg', {
+            contentType: 'image/jpeg',
+          })
+          .withMultiPartFormData(dto)
           .withPathParams('username', '$S{user_name}')
+          .stores('image_name', 'image')
           .expectStatus(200);
       });
     });
@@ -279,6 +282,18 @@ describe('App e2e', () => {
             Authorization: 'Bearer $S{userAt}',
           })
           .withPathParams('id', '$S{userId}')
+          .expectStatus(200);
+      });
+    });
+    describe('get the image', () => {
+      it('should get  the image', () => {
+        return pactum
+          .spec()
+          .get('/profile/image/{name}/')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withPathParams('name', '$S{image_name}')
           .expectStatus(200);
       });
     });

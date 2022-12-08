@@ -20,15 +20,12 @@ export class PostService {
   ) {
     try {
       const post = new this.postModel({
-        image: image?.buffer,
+        image: image?.filename,
         description: dto.description,
         date: new Date(),
         postedBy: userId,
         user: user,
       });
-      console.log(image);
-      
-      
       await post.save();
       await this.userModel.findOneAndUpdate(
         { _id: userId },
